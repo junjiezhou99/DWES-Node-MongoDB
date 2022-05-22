@@ -8,9 +8,17 @@ const client = new MongoClient(url);
     try {   
         await client.connect();
         const db = client.db(dbName);
-        const coll = db.collection('movies');
+        const coll = db.collection('users');
 
-        let remove = await coll.drop();
+        let add = await coll
+        .insertOne(
+            {
+                username:'peterparker@dominio.es',
+                password:'$2b$10$oBZSp9xQcnWrQZAKsIpuK.NzSNr8CFNE5SRv/mPmvjGKqzphJZ/He',
+                timestamp:0,
+                active: 1
+            }
+        );
 
         console.log("Connected successfully to server");
     } catch (err) {

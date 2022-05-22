@@ -1,43 +1,31 @@
-// import movie from './movies/movies.js';
-// import actor from './actors/actors.js';
-// import moviePojo from '../models/movies/moviePojo.js';
-// import actorPojo from '../models/actors/actorPojo.js';
 import messagesapp from "../data/messages.js";
-
-import movie from '../Database/MongoTest.js';
+import movie from '../Database/moviesMongo.js';
 
 class MoviesModel {
 
     async getMovies() {
-
         console.log("---> moviesModel::getMovies");
 
         const movies = await movie.getMovies();
-        // movies.forEach(element => {
-        //     element.actors = actor.getActorsById(element.id).actors;
-        // });
 
         return movies;
     }
 
     async getMovieById(id) {
-
         console.log(`---> moviesModel::getMovieById = ${id}`);
 
         const _movie = await movie.getMovieById(id);
-        if (typeof _movie == 'undefined')
+        if (_movie.length == 0)
             throw new Error(messagesapp.movie_dosent_exist);
 
-        // _movie.actors = actor.getActorsById(_movie.id).actors;
         return _movie;
     }
 
     async removeMovie(id) {
-
         console.log(`---> moviesModel::removeMovie = ${id}`);
 
         const index = await movie.removeMovie(id);
-        // if (index != -1) { actor.removeActors(id) }
+
         return index;
     }
 
@@ -57,40 +45,23 @@ class MoviesModel {
     }
 
 
-    createMovie(req) {
-
+    async createMovie(req) {
         console.log(`---> moviesModel::createMovie = ${req.id}`);
 
-        const new_movie = moviePojo(req);
-        if (typeof new_movie == 'undefined')
+        const _movie = await movie.getMovieById(req.id);
+        if (_movie.length > 0)
             throw new Error(messagesapp.movie_error_create);
 
-        const new_actor = actorPojo(req);
-        if (typeof new_actor == 'undefined')
-            throw new Error(messagesapp.actor_error_create);
+        await movie.createMovie(req);
 
-        movie.createMovie(new_movie);
-        actor.createActors(new_actor);
     }
 
     async updateMovie(req) {
         console.log(`---> moviesModel::updateMovie = ${req.id}`);
 
-        // const new_movie = moviePojo(req);
-        // if (typeof new_movie == 'undefined')
-        //     throw new Error(messagesapp.movie_error_update);
-
-        // const new_actor = actorPojo(req);
-        // if (typeof new_actor == 'undefined')
-        //     throw new Error(messagesapp.actor_error_update);
-
         const _movie = await movie.updateMovie(req);
         if (typeof _movie == 'undefined')
             throw new Error(messagesapp.movie_error_update);
-
-        // const _actor = actor.updateActors(new_actor);
-        // if (typeof _actor == 'undefined')
-        //     throw new Error(messagesapp.actor_error_update);
 
     }
 

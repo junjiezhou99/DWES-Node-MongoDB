@@ -31,27 +31,30 @@ const getMovieById = async (req, res, next) => {
 const removeMovie = async (req, res, next) => {
     console.log("---> moviesController::removeMovie");
 
-    if (!req.params.id)
+    try {
+        if (!req.params.id)
         next(HttpError(400, { message: messagesapp.parameter_not_especified  }));
 
-    const id = req.params.id;
-    if (await moviesModel.removeMovie(id) == -1) {
-        next(HttpError(400, { message: messagesapp.movie_dosent_exist  }));
-    }
+        const id = req.params.id;
+        await moviesModel.getMovieById(id);
+        await moviesModel.removeMovie(id);
+        getAllMovies(req, res);
 
-    await getAllMovies(req, res);
+    } catch (error) {
+        next(HttpError(400, { message: error.message }));
+    }
 
 }
 
-const createMovie = (req, res, next) => {
+const createMovie = async (req, res, next) => {
     console.log(`---> moviesController::createMovie`);
 
     if (!req.body)
         next(HttpError(400, { message: messagesapp.parameter_not_especified }));
 
     try {
-
-        moviesModel.createMovie(req.body);
+        
+        await moviesModel.createMovie(req.body);
         getAllMovies(req, res);
 
     } catch (error) {
@@ -68,6 +71,7 @@ const updateMovie = async (req, res, next) => {
         if (!req.body)
             next(HttpError(400, { message: messagesapp.parameter_not_especified }));
 
+        await moviesModel.getMovieById(req.body.id);
         await moviesModel.updateMovie(req.body);
         getAllMovies(req, res);
 

@@ -6,8 +6,7 @@ import messagesapp from "../data/messages.js";
 import messagesusr from '../models/user/messagesusr.js';
 
 
-
-const register = (req, res, next) => {
+const register = async (req, res, next) => {
     console.log(`---> userController::register`);
 
     try {
@@ -16,11 +15,11 @@ const register = (req, res, next) => {
         console.log(`---> userController::register ${body.password}`);
         const user = { username: body.username, password: body.password, timestamp: (body.timestamp || 0), active: (body.avtive || 1) };
 
-        result = userModel.getUser(user);
-        if (result != undefined) {
+        result = await userModel.getUser(user);
+        if (result != 0) {
             next(HttpError(400, { message: messagesapp.user_exist_register }));
         } else {
-            result = userModel.createUser(user);
+            result = await userModel.createUser(user);
             if (result < 0) {
 
                 next(HttpError(400, { message: messagesapp.user_error_register }))
@@ -40,13 +39,14 @@ const register = (req, res, next) => {
 
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
     console.log(`---> userController::login`);
 
     try {
         const body = req.body;
         const user = { username: body.username, password: body.password };
-        const result = userModel.getUser(user);
+        const resultArray = await userModel.getUser(user);
+        const result = resultArray[0];
 
         if (result === undefined) {
             next(HttpError(400, { message: messagesapp.user_error_username }));

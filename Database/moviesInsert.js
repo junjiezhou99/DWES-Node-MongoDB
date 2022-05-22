@@ -10,7 +10,7 @@ const client = new MongoClient(url);
         const db = client.db(dbName);
         const coll = db.collection('movies');
 
-        let add = await coll
+        await coll
         .insertMany(
             [
                 {

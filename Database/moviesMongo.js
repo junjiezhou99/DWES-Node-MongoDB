@@ -46,13 +46,7 @@ class MongoDB {
             const db = client.db('DBtest');
             const coll = db.collection('movies');
 
-            let res = await coll.updateOne({id:movie.id}, {$set:{
-                title:movie.title,
-                genres:movie.genres,
-                actors:movie.actors,
-                year:movie.year,
-                director:movie.director
-            }})
+            let res = await coll.updateOne({id:movie.id}, {$set:movie});
             return res;
 
         } catch (error) {
@@ -61,7 +55,7 @@ class MongoDB {
         client.close();
     }
 
-    async addMovie(movie){
+    async createMovie(movie){
         try {
             console.log("Ha pasado por MongoTest!");
 
@@ -69,7 +63,24 @@ class MongoDB {
             const db = client.db('DBtest');
             const coll = db.collection('movies');
 
-            
+            let res = await coll.insertOne(movie);
+            return res;
+
+        } catch (error) {
+            console.log(error.stack);
+        }
+        client.close();
+    }
+
+    async removeMovie(idMovie){
+        try {
+            console.log("Ha pasado por MongoTest!");
+
+            await client.connect();
+            const db = client.db('DBtest');
+            const coll = db.collection('movies');
+
+            let res = await coll.deleteOne({id:parseInt(idMovie)});
             return res;
 
         } catch (error) {
